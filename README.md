@@ -1,4 +1,4 @@
-# Google Image Scrapping
+# Google Image Scraping
 
 ## Todo
 [ ] Add selenium to lazy load images
