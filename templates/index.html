@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Image scraper</title>
+  <style>
+    body {
+      background-color: #f5f5f5;
+      height: 100vh;
+      font-family: 'Catamaran', sans-serif;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Christian's Google Image Scraper</h1>
+  <h2>Fill this form</h2>
+  <form method="POST" action="/">
+    <input type="text" name="data" placeholder="What are you looking for?">
+    <input type="text" name="n_images" placeholder="How many? (Max 20)">
+    <input type="submit" value="submit">
+  </form>
+  {% if result %}
+  <form method="POST" action="/clear">
+    <button type="submit">Clear images on server</button>
+  </form>
+  {% endif %}
+</body>
+
+</html>

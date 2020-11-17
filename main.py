@@ -1,6 +1,8 @@
 import os
 import requests  # to sent GET requests
 from bs4 import BeautifulSoup  # to parse HTML
+from flask import Flask, render_template, request, send_file, redirect, url_for
+import shutil
 
 # user can input a topic and a number
 # download first n images from google image search
@@ -18,18 +20,46 @@ QUERY = \
 
 SAVE_FOLDER = 'images'
 
+cwd = os.getcwd()
 
-def main():
+app = Flask(__name__)
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
+@app.route('/', methods=['POST'])
+def search_images():
+    data = request.form['data']
+    n_images = request.form['n_images']
     if not os.path.exists(SAVE_FOLDER):
         os.mkdir(SAVE_FOLDER)
-    download_images()
+    result = download_images(data, n_images)
+    path = archive_files(result)
+    return send_file(path, as_attachment=True)
 
 
-def download_images():
+@app.route('/clear')
+def clear_images():
+    shutil.rmtree(SAVE_FOLDER)
+    return redirect(url_for("index"))
+
+
+def archive_files(result):
+    path = SAVE_FOLDER + '/' + result
+    shutil.make_archive(os.path.join(cwd, path),
+                        'zip', os.path.join(cwd, path))
+    path = path+".zip"
+    return path
+
+
+def download_images(data, n_images):
     # ask for user input
-    data = input('What are you looking for? ')
-    n_images = int(input('How many images do you want? '))
-
+    # data = input('What are you looking for? ')
+    # n_images = int(input('How many images do you want? '))
+    n_images = int(n_images)
     print('Start searching...')
 
     # get url query string
@@ -59,9 +89,8 @@ def download_images():
         imagename = image_path + '/' + data + str(i+1) + '.jpg'
         with open(imagename, 'wb') as file:
             file.write(response.content)
+    result = data
+    return result
 
-    print('Done')
 
-
-if __name__ == '__main__':
-    main()
+app.run(host='0.0.0.0', port=8080)
