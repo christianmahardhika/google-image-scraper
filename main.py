@@ -91,6 +91,3 @@ def download_images(data, n_images):
             file.write(response.content)
     result = data
     return result
-
-
-app.run(host='0.0.0.0', port=8080)
