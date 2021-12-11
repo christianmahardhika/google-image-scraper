@@ -72,7 +72,7 @@ def download_images(data, n_images):
     # find all img tags where class='t0fcAb'
     soup = BeautifulSoup(page, 'html.parser')
     results = soup.find_all(
-        'img', limit=n_images)
+        'img', limit=n_images+1)
     # extract the link from the img tag
     imagelinks = []
     for re in results:
