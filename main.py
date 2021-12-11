@@ -1,8 +1,9 @@
 import os
+import shutil
+
 import requests  # to sent GET requests
 from bs4 import BeautifulSoup  # to parse HTML
-from flask import Flask, render_template, request, send_file, redirect, url_for
-import shutil
+from flask import Flask, redirect, render_template, request, send_file, url_for
 
 # user can input a topic and a number
 # download first n images from google image search
@@ -70,24 +71,31 @@ def download_images(data, n_images):
 
     # find all img tags where class='t0fcAb'
     soup = BeautifulSoup(page, 'html.parser')
-    results = soup.findAll('img', {'class': 't0fcAb'}, limit=n_images)
+    results = soup.find_all(
+        'img', limit=n_images)
     # extract the link from the img tag
     imagelinks = []
     for re in results:
         link = re.get('src')
         imagelinks.append(link)
+        print(link)
 
     print(f'found {len(imagelinks)} images')
     print('Start downloading...')
 
     for i, imagelink in enumerate(imagelinks):
         # open image link and save as file
-        response = requests.get(imagelink)
-        image_path = SAVE_FOLDER + '/' + data
-        if not os.path.exists(image_path):
-            os.mkdir(image_path)
-        imagename = image_path + '/' + data + str(i+1) + '.jpg'
-        with open(imagename, 'wb') as file:
-            file.write(response.content)
+        try:
+            response = requests.get(imagelink)
+            image_path = SAVE_FOLDER + '/' + data
+            if not os.path.exists(image_path):
+                os.mkdir(image_path)
+
+            imagename = image_path + '/' + data + str(i+1) + '.jpeg'
+            with open(imagename, 'wb') as file:
+                file.write(response.content)
+        except:
+            pass
+
     result = data
     return result
